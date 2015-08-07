@@ -4,6 +4,7 @@
     He loses all of his cash ($0) and walks away feeling sad (Lose).
     He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
+use std::env;
 
 struct Player{
     cash: i64,
@@ -17,7 +18,18 @@ impl Player {
 
     fn get_win_ratio(&self) -> f64 {
        //iterate over the round history
-       return 10.0;
+       let mut wins: f64 = 0 as f64;
+       let mut losses: f64 = 0 as f64;
+        
+       for &round in self.round_history.iter(){
+           if round{
+           wins = wins + 1.0;
+           }else{
+           losses = losses + 1.0;
+           }
+       }
+
+       return wins/losses;
     }
 
     fn decide_bet_amount(&self) -> i64 {
@@ -49,12 +61,12 @@ fn generate_coin_toss() -> bool {
     return rand::random();
 }
 
-fn main() {
+fn main_game() {
     
    let mut player = Player { cash: 50, 
                              target: 250,
                              rounds: 0,
-                             round_history: vec![],
+                             round_history: Vec::new(),
                              round_limit: 20000,};
    loop {
         let mut bet: i64 = player.decide_bet_amount();
@@ -69,9 +81,13 @@ fn main() {
         player.cash = player.cash + bet;
         player.rounds = player.rounds + 1;
         player.round_history.push(round);
-        println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet, player.rounds);
+        println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet.abs() , player.rounds);
         if !player.is_in_play(){
             break;
         }
     }
+}
+
+fn main(){
+    main_game();
 }
