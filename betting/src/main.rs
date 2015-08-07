@@ -5,6 +5,33 @@
     He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
 
+struct Player{
+    cash: u64,
+    target_amount: u64,
+    rounds: u64,
+    round_history: Vec<bool>, //true = win, false = loss
+    round_limit: u64,
+}
+
+impl Player {
+
+    fn get_win_ratio(&self) -> u64 {
+       //iterate over the round history 
+    }
+
+    fn decide_bet_amount(&self) -> u8 {
+        //enter bet strategy here
+    }
+
+    fn is_in_play(&self) -> bool {
+        //decides whether player has lost or not
+    }
+}
+
+fn generate_coin_toss() -> bool {
+    return rand::random();
+}
+
 fn main() {
     
 }
