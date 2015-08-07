@@ -12,7 +12,19 @@ struct Player{
     rounds: i64,
     round_history: Vec<bool>, //true = win, false = loss
     round_limit: i64,
-} 
+}
+
+fn get_last_round_chain_length(rounds : &mut Vec<bool>, chain_type : bool) -> i64{
+    while rounds[rounds.len() - 1] != chain_type {
+        rounds.pop();
+    }
+    let mut accum: i64 = 0;
+    while rounds[rounds.len() - 1] == chain_type {
+        rounds.pop();
+        accum = accum + 1;
+    }
+    return accum;
+}
 
 impl Player {
 
@@ -31,11 +43,16 @@ impl Player {
 
        return wins/losses;
     }
-
     fn decide_bet_amount(&self) -> i64 {
         //bet strategy
         let bet: i64;
-        return 2;
+        let chain_length: i64;
+        let last_item: bool = self.round_history[self.round_history.len() - 1];
+        let last_item_chain_length: i64 = get_last_round_chain_length(last_item);
+        if last_item {
+            
+        }
+        return self.bet_limit;
     }
 
     fn is_in_play(&self) -> bool {
@@ -70,7 +87,7 @@ fn bool_to_status (input : bool) -> &'static str{
     }
 }
 
-fn main_game(cash: i64, target: i64,bet_limit: i64, round_limit: i64, logging: bool) {
+fn main_game(cash: i64, target: i64, bet_limit: i64, round_limit: i64, logging: bool) {
     
    let mut player = Player { cash: cash, 
                              target: target,
@@ -118,9 +135,9 @@ fn main(){
                   args[2].parse().ok().expect("Invalid Argument."), 
                   args[3].parse().ok().expect("Invalid Argument."),
                   args[4].parse().ok().expect("Invalid Argument."),
-                  string_to_bool(&args[4]));
+                  string_to_bool(&args[5]));
     }else{
         println!("Your arguments were invalid, going with default values.");
-        main_game(50, 250, 20000, false);
+        main_game(50, 250, 2, 20000, false);
     }
 }
