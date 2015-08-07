@@ -6,7 +6,7 @@
 extern crate rand;
 
 struct Player{
-    cash: i64,
+    mut cash: i64,
     target: u64,
     rounds: u64,
     round_history: Vec<bool>, //true = win, false = loss
@@ -16,18 +16,33 @@ struct Player{
 impl Player {
 
     fn get_win_ratio(&self) -> f64 {
-       //iterate over the round history 
+       //iterate over the round history
        return 10.0;
     }
 
-    fn decide_bet_amount(&self) -> u8 {
-        //enter bet strategy here
+    fn decide_bet_amount(&self) -> i8 {
+        //bet strategy
         return 2;
     }
 
+    fn change_cash_amount(&self, i8: change) {
+        //changes the cash amount of the player
+        self.cash = self.cash + change;
+    }
+
     fn is_in_play(&self) -> bool {
-        //decides whether player has lost or not
-        if self.cash <= 0 || self.rounds >= 20000 {
+        //decides whether player has finished playing or not
+        if self.cash <= 0{
+            println!("The player has played {} rounds and is now out of cash.", self.rounds);
+            println!("Win/Loss Ratio: {}", self.get_win_ratio());
+            return false;
+        }else if self.rounds >= self.round_limit{
+            println!("The player has played at least {} rounds, and has given up with {} cash.", self.rounds, self.cash);
+            println!("Win/Loss Ratio: {}", self.get_win_ratio());
+            return false;
+        }else if self.cash >= target{
+            println!("The player has obtained at least the target amount, {}.", self.target);
+            println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
         }else{
             return true;
@@ -45,5 +60,14 @@ fn main() {
                               rounds: 0,
                               round_history: vec![],
                               round_limit: 20000,};
+    let mut bet: i8 = player.decide_bet_amount();
     
+    if !generate_coin_toss() {
+        bet = bet * -1;
+    }
+    player.change_cash_amount(bet);
+    
+    if player.is_in_play() {
+        main();
+    }
 }
