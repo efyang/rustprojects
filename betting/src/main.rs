@@ -7,7 +7,7 @@ extern crate rand;
 
 struct Player{
     cash: u64,
-    target_amount: u64,
+    target: u64,
     rounds: u64,
     round_history: Vec<bool>, //true = win, false = loss
     round_limit: u64,
@@ -15,16 +15,19 @@ struct Player{
 
 impl Player {
 
-    fn get_win_ratio(&self) -> u64 {
+    fn get_win_ratio(&self) -> f64 {
        //iterate over the round history 
+       return 10.0;
     }
 
     fn decide_bet_amount(&self) -> u8 {
         //enter bet strategy here
+        return 2;
     }
 
     fn is_in_play(&self) -> bool {
         //decides whether player has lost or not
+        return true;
     }
 }
 
@@ -33,5 +36,10 @@ fn generate_coin_toss() -> bool {
 }
 
 fn main() {
-    
+    let mut player = Player { cash: 50, 
+                              target: 25,
+                              rounds: 0,
+                              round_history: vec![],
+                              round_limit: 20000,};
+
 }
