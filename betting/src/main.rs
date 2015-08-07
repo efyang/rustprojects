@@ -8,6 +8,7 @@ use std::env;
 struct Player{
     cash: i64,
     target: i64,
+    bet_limit: i64,
     rounds: i64,
     round_history: Vec<bool>, //true = win, false = loss
     round_limit: i64,
@@ -33,6 +34,7 @@ impl Player {
 
     fn decide_bet_amount(&self) -> i64 {
         //bet strategy
+        let bet: i64;
         return 2;
     }
 
@@ -68,10 +70,11 @@ fn bool_to_status (input : bool) -> &'static str{
     }
 }
 
-fn main_game(cash: i64, target: i64, round_limit: i64, logging: bool) {
+fn main_game(cash: i64, target: i64,bet_limit: i64, round_limit: i64, logging: bool) {
     
    let mut player = Player { cash: cash, 
                              target: target,
+                             bet_limit: bet_limit,
                              rounds: 0,
                              round_history: Vec::new(),
                              round_limit: round_limit,};
@@ -109,10 +112,12 @@ fn string_to_bool (input : &String) -> bool {
 
 fn main(){
     let args: Vec<String> = env::args().collect();
-    if args.len() == 5 {
+    if args.len() == 6 {
+        //cash target bet_limit round_limit logging
         main_game(args[1].parse().ok().expect("Invalid Argument."), 
                   args[2].parse().ok().expect("Invalid Argument."), 
                   args[3].parse().ok().expect("Invalid Argument."),
+                  args[4].parse().ok().expect("Invalid Argument."),
                   string_to_bool(&args[4]));
     }else{
         println!("Your arguments were invalid, going with default values.");
