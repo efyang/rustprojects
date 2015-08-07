@@ -6,11 +6,11 @@
 extern crate rand;
 
 struct Player{
-    mut cash: i64,
-    target: u64,
-    rounds: u64,
+    cash: i64,
+    target: i64,
+    rounds: i64,
     round_history: Vec<bool>, //true = win, false = loss
-    round_limit: u64,
+    round_limit: i64,
 }
 
 impl Player {
@@ -20,28 +20,23 @@ impl Player {
        return 10.0;
     }
 
-    fn decide_bet_amount(&self) -> i8 {
+    fn decide_bet_amount(&self) -> i64 {
         //bet strategy
         return 2;
-    }
-
-    fn change_cash_amount(&self, i8: change) {
-        //changes the cash amount of the player
-        self.cash = self.cash + change;
     }
 
     fn is_in_play(&self) -> bool {
         //decides whether player has finished playing or not
         if self.cash <= 0{
-            println!("The player has played {} rounds and is now out of cash.", self.rounds);
+            println!("\nThe player has played {} rounds and is now out of cash.", self.rounds);
             println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
         }else if self.rounds >= self.round_limit{
-            println!("The player has played at least {} rounds, and has given up with {} cash.", self.rounds, self.cash);
+            println!("\nThe player has played at least {} rounds, and has given up with {} cash.", self.rounds, self.cash);
             println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
-        }else if self.cash >= target{
-            println!("The player has obtained at least the target amount, {}.", self.target);
+        }else if self.cash >= self.target{
+            println!("\nThe player has obtained at least the target amount, {}.", self.target);
             println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
         }else{
@@ -55,19 +50,28 @@ fn generate_coin_toss() -> bool {
 }
 
 fn main() {
-    let mut player = Player { cash: 50, 
-                              target: 25,
-                              rounds: 0,
-                              round_history: vec![],
-                              round_limit: 20000,};
-    let mut bet: i8 = player.decide_bet_amount();
     
-    if !generate_coin_toss() {
-        bet = bet * -1;
-    }
-    player.change_cash_amount(bet);
-    
-    if player.is_in_play() {
-        main();
+   let mut player = Player { cash: 50, 
+                             target: 250,
+                             rounds: 0,
+                             round_history: vec![],
+                             round_limit: 20000,};
+   loop {
+        let mut bet: i64 = player.decide_bet_amount();
+        let mut round: bool;
+        
+        if !generate_coin_toss() {
+            bet = bet * -1;
+            round = false;
+        }else{
+            round = true;
+        }
+        player.cash = player.cash + bet;
+        player.rounds = player.rounds + 1;
+        player.round_history.push(round);
+        println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet, player.rounds);
+        if !player.is_in_play(){
+            break;
+        }
     }
 }
