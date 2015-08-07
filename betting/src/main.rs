@@ -6,7 +6,7 @@
 extern crate rand;
 
 struct Player{
-    cash: u64,
+    cash: i64,
     target: u64,
     rounds: u64,
     round_history: Vec<bool>, //true = win, false = loss
@@ -27,7 +27,11 @@ impl Player {
 
     fn is_in_play(&self) -> bool {
         //decides whether player has lost or not
-        return true;
+        if self.cash <= 0 || self.rounds >= 20000 {
+            return false;
+        }else{
+            return true;
+        }
     }
 }
 
@@ -41,5 +45,5 @@ fn main() {
                               rounds: 0,
                               round_history: vec![],
                               round_limit: 20000,};
-
+    
 }
