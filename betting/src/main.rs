@@ -11,8 +11,11 @@ struct Player{
     rounds: i64,
     round_history: Vec<bool>, //true = win, false = loss
     round_limit: i64,
-} impl Player {
-fn get_win_ratio(&self) -> f64 {
+} 
+
+impl Player {
+
+    fn get_win_ratio(&self) -> f64 {
        //iterate over the round history
        let mut wins: f64 = 0 as f64;
        let mut losses: f64 = 0 as f64;
