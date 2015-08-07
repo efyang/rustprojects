@@ -10,5 +10,5 @@ fn main() {
         .ok()
         .expect("Readline failed.");
 
-    println!("You entered \"{}\".", guess);
+    println!("You entered \"{}\".", guess.trim());
 }
