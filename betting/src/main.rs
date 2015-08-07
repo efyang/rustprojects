@@ -1,8 +1,7 @@
 /*Here is a simple game involving coin tosses: A player is given a starting amount of cash (perhaps $50) and repeatedly bets an amount of money (perhaps $1 or $2) on the outcome of a fair coin toss. Each time the coin is tossed, the player decides how much money to bet on that toss. The player will continue to play the game until one of three events happens:
 
     He reaches a predefined goal ($250) and walks away feeling happy (Win).
-    He loses all of his cash ($0) and walks away feeling sad (Lose).
-    He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
+    He loses all of his cash ($0) and walks away feeling sad (Lose).  He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
 use std::env;
 
@@ -12,11 +11,8 @@ struct Player{
     rounds: i64,
     round_history: Vec<bool>, //true = win, false = loss
     round_limit: i64,
-}
-
-impl Player {
-
-    fn get_win_ratio(&self) -> f64 {
+} impl Player {
+fn get_win_ratio(&self) -> f64 {
        //iterate over the round history
        let mut wins: f64 = 0 as f64;
        let mut losses: f64 = 0 as f64;
@@ -61,16 +57,16 @@ fn generate_coin_toss() -> bool {
     return rand::random();
 }
 
-fn main_game() {
+fn main_game(cash: i64, target: i64, round_limit: i64, logging: bool) {
     
-   let mut player = Player { cash: 50, 
-                             target: 250,
+   let mut player = Player { cash: cash, 
+                             target: target,
                              rounds: 0,
                              round_history: Vec::new(),
-                             round_limit: 20000,};
+                             round_limit: round_limit,};
    loop {
         let mut bet: i64 = player.decide_bet_amount();
-        let mut round: bool;
+        let round: bool;
         
         if !generate_coin_toss() {
             bet = bet * -1;
@@ -81,7 +77,9 @@ fn main_game() {
         player.cash = player.cash + bet;
         player.rounds = player.rounds + 1;
         player.round_history.push(round);
-        println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet.abs() , player.rounds);
+        if logging {
+            println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet.abs() , player.rounds);
+        }
         if !player.is_in_play(){
             break;
         }
@@ -89,5 +87,17 @@ fn main_game() {
 }
 
 fn main(){
-    main_game();
+    let args: Vec<String> = env::args().collect();
+    println!("{}",args.len());
+    // *FIX THIS*
+    if args.len() == 5 {
+        main_game(/*args[0].parse().ok().expect("Invalid Argument."), 
+                  args[1].parse().ok().expect("Invalid Argument."), 
+                  args[2].parse().ok().expect("Invalid Argument."),
+                  args[3].parse::<bool>().ok().expect("Invalid Argument."*/
+                  50, 250, 20000, true);
+    }else{
+    println!("Your arguments were invalid, going with default values.");
+    main_game(50, 250, 20000, false);
+    }
 }
