@@ -57,6 +57,14 @@ fn generate_coin_toss() -> bool {
     return rand::random();
 }
 
+fn bool_to_status (input : bool) -> &'static str{
+    if input {
+        return "Won";
+    }else{
+        return "Lost";
+    }
+}
+
 fn main_game(cash: i64, target: i64, round_limit: i64, logging: bool) {
     
    let mut player = Player { cash: cash, 
@@ -78,7 +86,7 @@ fn main_game(cash: i64, target: i64, round_limit: i64, logging: bool) {
         player.rounds = player.rounds + 1;
         player.round_history.push(round);
         if logging {
-            println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, round, bet.abs() , player.rounds);
+            println!("Cash: {} Bet: {} Bet Amount: {} Rounds: {}", player.cash, bool_to_status(round), bet.abs() , player.rounds);
         }
         if !player.is_in_play(){
             break;
@@ -86,18 +94,25 @@ fn main_game(cash: i64, target: i64, round_limit: i64, logging: bool) {
     }
 }
 
+fn string_to_bool (input : &String) -> bool {
+    let lower_input: String = input.to_lowercase();
+    if lower_input == "true" || lower_input == "yes" {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+
 fn main(){
     let args: Vec<String> = env::args().collect();
-    println!("{}",args.len());
-    // *FIX THIS*
     if args.len() == 5 {
-        main_game(/*args[0].parse().ok().expect("Invalid Argument."), 
-                  args[1].parse().ok().expect("Invalid Argument."), 
-                  args[2].parse().ok().expect("Invalid Argument."),
-                  args[3].parse::<bool>().ok().expect("Invalid Argument."*/
-                  50, 250, 20000, true);
+        main_game(args[1].parse().ok().expect("Invalid Argument."), 
+                  args[2].parse().ok().expect("Invalid Argument."), 
+                  args[3].parse().ok().expect("Invalid Argument."),
+                  string_to_bool(&args[4]));
     }else{
-    println!("Your arguments were invalid, going with default values.");
-    main_game(50, 250, 20000, false);
+        println!("Your arguments were invalid, going with default values.");
+        main_game(50, 250, 20000, false);
     }
 }
