@@ -7,6 +7,7 @@ use std::env;
 
 struct Player{
     cash: i64,
+    start_cash: i64,
     target: i64,
     bet_limit: i64,
     rounds: i64,
@@ -15,11 +16,11 @@ struct Player{
 }
 
 fn get_last_round_chain_length(rounds : &mut Vec<bool>, chain_type : bool) -> i64{
-    while rounds[rounds.len() - 1] != chain_type {
+    while rounds[rounds.len() - 1] != chain_type && rounds.len() > 1 {
         rounds.pop();
     }
     let mut accum: i64 = 0;
-    while rounds[rounds.len() - 1] == chain_type {
+    while rounds[rounds.len() - 1] == chain_type && rounds.len() > 1{
         rounds.pop();
         accum = accum + 1;
     }
@@ -35,9 +36,9 @@ impl Player {
         
        for &round in self.round_history.iter(){
            if round{
-           wins = wins + 1.0;
+               wins = wins + 1.0;
            }else{
-           losses = losses + 1.0;
+               losses = losses + 1.0;
            }
        }
 
@@ -45,14 +46,27 @@ impl Player {
     }
     fn decide_bet_amount(&self) -> i64 {
         //bet strategy
-        let bet: i64;
-        let chain_length: i64;
         let last_item: bool = self.round_history[self.round_history.len() - 1];
-        let last_item_chain_length: i64 = get_last_round_chain_length(last_item);
-        if last_item {
-            
-        }
+        let mut new_round_history: Vec<bool> = self.round_history.clone();
+        let last_item_chain_length: i64 = get_last_round_chain_length(&mut new_round_history, last_item);
+        if self.cash < self.start_cash{
+            return self.bet_limit/2;
+        }else{
+            if last_item {
+                if last_item_chain_length <= 1 {
+                    return self.bet_limit;
+                }else{
+                    return self.bet_limit/2;
+                }    
+            }else{
+                if last_item_chain_length <= 1 {
+                    return self.bet_limit/2;
+                }else{
+                    return self.bet_limit;
+                }
+            }
         return self.bet_limit;
+       }
     }
 
     fn is_in_play(&self) -> bool {
@@ -66,7 +80,7 @@ impl Player {
             println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
         }else if self.cash >= self.target{
-            println!("\nThe player has obtained at least the target amount, {}.", self.target);
+            println!("\nAfter {} rounds, the player has obtained at least the target amount, {}.", self.rounds, self.target);
             println!("Win/Loss Ratio: {}", self.get_win_ratio());
             return false;
         }else{
@@ -87,13 +101,23 @@ fn bool_to_status (input : bool) -> &'static str{
     }
 }
 
-fn main_game(cash: i64, target: i64, bet_limit: i64, round_limit: i64, logging: bool) {
+fn average ( values : Vec<f64>) {
+    let length : f64 = values.len() as f64;
+    let mut accum : f64 = 0 as f64;
+    for x in values.iter() {
+        accum = accum + x;
+    }
+    return accum/length;
+}
+
+fn main_game(cash: i64, target: i64, bet_limit: i64, round_limit: i64, logging: bool) -> f64 {
     
    let mut player = Player { cash: cash, 
+                             start_cash: cash,
                              target: target,
                              bet_limit: bet_limit,
                              rounds: 0,
-                             round_history: Vec::new(),
+                             round_history: vec![false],
                              round_limit: round_limit,};
    loop {
         let mut bet: i64 = player.decide_bet_amount();
@@ -115,6 +139,7 @@ fn main_game(cash: i64, target: i64, bet_limit: i64, round_limit: i64, logging: 
             break;
         }
     }
+   return player.get_win_ratio();
 }
 
 fn string_to_bool (input : &String) -> bool {
@@ -131,13 +156,13 @@ fn main(){
     let args: Vec<String> = env::args().collect();
     if args.len() == 6 {
         //cash target bet_limit round_limit logging
-        main_game(args[1].parse().ok().expect("Invalid Argument."), 
-                  args[2].parse().ok().expect("Invalid Argument."), 
-                  args[3].parse().ok().expect("Invalid Argument."),
-                  args[4].parse().ok().expect("Invalid Argument."),
-                  string_to_bool(&args[5]));
+        let result: f64 = main_game(args[1].parse().ok().expect("Invalid Argument."), 
+                                    args[2].parse().ok().expect("Invalid Argument."), 
+                                    args[3].parse().ok().expect("Invalid Argument."),
+                                    args[4].parse().ok().expect("Invalid Argument."),
+                                    string_to_bool(&args[5]));
     }else{
         println!("Your arguments were invalid, going with default values.");
-        main_game(50, 250, 2, 20000, false);
+        let result: f64 = main_game(50, 250, 2, 20000, false);
     }
 }
