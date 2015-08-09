@@ -171,7 +171,7 @@ fn main(){
     }else{
         println!("Your arguments were invalid, going with default values.");
         for _ in 0..10 {
-            results.push(main_game(50, 250, 2, 20000, false, ));
+            results.push(main_game(50, 250, 2, 20000, false));
         }
     }
     println!("Average Win/Loss ratio: {}", average(results));
