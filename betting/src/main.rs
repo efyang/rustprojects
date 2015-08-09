@@ -16,12 +16,15 @@ struct Player{
 }
 
 fn get_last_round_chain_length(rounds : &mut Vec<bool>, chain_type : bool) -> i64{
-    while rounds[rounds.len() - 1] != chain_type && rounds.len() > 1 {
-        rounds.pop();
+    while rounds.len() > 1 {
+        let current: bool = rounds.pop().unwrap();
+        if current == chain_type {
+            rounds.push(current);
+            break;
+        }
     }
     let mut accum: i64 = 0;
-    while rounds[rounds.len() - 1] == chain_type && rounds.len() > 1{
-        rounds.pop();
+    while rounds.pop().unwrap() == chain_type && rounds.len() > 1{
         accum = accum + 1;
     }
     return accum;
@@ -101,7 +104,7 @@ fn bool_to_status (input : bool) -> &'static str{
     }
 }
 
-fn average ( values : Vec<f64>) {
+fn average ( values : Vec<f64>) -> f64 {
     let length : f64 = values.len() as f64;
     let mut accum : f64 = 0 as f64;
     for x in values.iter() {
@@ -154,15 +157,22 @@ fn string_to_bool (input : &String) -> bool {
 
 fn main(){
     let args: Vec<String> = env::args().collect();
-    if args.len() == 6 {
-        //cash target bet_limit round_limit logging
-        let result: f64 = main_game(args[1].parse().ok().expect("Invalid Argument."), 
-                                    args[2].parse().ok().expect("Invalid Argument."), 
-                                    args[3].parse().ok().expect("Invalid Argument."),
-                                    args[4].parse().ok().expect("Invalid Argument."),
-                                    string_to_bool(&args[5]));
+    let mut results: Vec<f64> = Vec::new();
+    if args.len() == 7 {
+        //cash target bet_limit round_limit logging test_times
+        let test_times: i64 = args[6].parse().ok().expect("Invalid Argument");
+        for _ in 0..test_times {
+            results.push(main_game(args[1].parse().ok().expect("Invalid Argument."),
+                                   args[2].parse().ok().expect("Invalid Argument."), 
+                                   args[3].parse().ok().expect("Invalid Argument."),
+                                   args[4].parse().ok().expect("Invalid Argument."),
+                                   string_to_bool(&args[5])));
+        }
     }else{
         println!("Your arguments were invalid, going with default values.");
-        let result: f64 = main_game(50, 250, 2, 20000, false);
+        for _ in 0..10 {
+            results.push(main_game(50, 250, 2, 20000, false, ));
+        }
     }
+    println!("Average Win/Loss ratio: {}", average(results));
 }
