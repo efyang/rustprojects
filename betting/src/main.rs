@@ -5,6 +5,7 @@
 extern crate rand;
 extern crate num_cpus; use std::env;
 use std::thread;
+use std::sync::mpsc::channel;
 
 struct Player{
     cash: i64,
@@ -167,6 +168,8 @@ fn main(){
     let test_times: i64;
     let mut already_tested: i64 = 0;
     let mut thread_pool = Vec::new();
+    let (sender, receiver) = channel::<f64>();
+    let (tsender, treceiver) = channel::<i64>();
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
         cash = args[1].parse().ok().expect("Invalid Argument.");
@@ -186,15 +189,24 @@ fn main(){
         test_times = 10;
     }
     for _ in 0..max_thread_number {
+        let sender = sender.clone();
+        let tsender = tsender.clone();
         thread_pool.push(thread::spawn(move || {
             while already_tested < test_times{
-                already_tested = already_tested + 1;
-                results.push(main_game(cash, target, bet_limit, round_limit, logging));
+                tsender.send(1).unwrap();
+                println!("{}",already_tested);
+                sender.send((main_game(cash, target, bet_limit, round_limit, logging))).unwrap();
             }
         }));
     }
-    for worker in thread_pool{
-        worker.join();
+    for _ in 0..test_times{
+        already_tested = already_tested + treceiver.recv().unwrap();
     }
-    println!("Average Win/Loss ratio: {}", average(results.clone()));
+    for _ in 0..test_times{
+        results.push(receiver.recv().unwrap());
+    }
+    for worker in thread_pool{
+        worker.join().ok().expect("Thread failed to join.");
+    }
+    println!("Average Win/Loss ratio: {}", average(results));
 }
