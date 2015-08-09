@@ -160,15 +160,16 @@ fn string_to_bool (input : &String) -> bool {
 fn main(){
     let args: Vec<String> = env::args().collect();
     let mut results: Vec<f64> = Vec::new();
-    let thread_number: i64 = num_cpus::get();
+    let max_thread_number: i64 = num_cpus::get();
     let cash: i64; 
     let target: i64;
     let bet_limit: i64;
     let round_limit: i64;
     let logging: bool;
     let test_times: i64;
-    let multicore_loop_times: i64;
-    let loop_times: i64;
+    let already_tested: i64 = 0;
+    let mut thread_pool: Vec<Thread> = Vec::new();
+    let mut thread_num: i64;
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
         cash = args[1].parse().ok().expect("Invalid Argument.");
@@ -177,8 +178,6 @@ fn main(){
         round_limit = args[4].parse().ok().expect("Invalid Argument.");
         logging = string_to_bool(&args[5]);
         test_times = args[6].parse().ok().expect("Invalid Argument");
-        
-        
     }else{
         println!("Your arguments were invalid, going with default values.");
         println!("Argument order should be: cash target bet_limit round_limit logging test_times");
@@ -188,6 +187,21 @@ fn main(){
         round_limit = 20000;
         logging = false;
         test_times = 10;
+    }
+    loop {
+        thread_num = thread_pool.len();
+        if already_tested < test_times && thread_num < max_thread_number {
+            thread_pool.push(thread::spawn(move || {
+                results.push(main_game(cash, target, bet_limit, round_limit, logging));
+            }));
+        }else if thread_num >= max_thread_number{
+            for worker in thread_pool.iter(){
+                //go through and check whether each worker is done, if done then remove
+                
+            }
+        }else{
+            break;
+        }
     }
     println!("Average Win/Loss ratio: {}", average(results));
 }
