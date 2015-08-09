@@ -3,7 +3,9 @@
     He reaches a predefined goal ($250) and walks away feeling happy (Win).
     He loses all of his cash ($0) and walks away feeling sad (Lose).  He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
+extern crate num_cpus;
 use std::env;
+use std::thread;
 
 struct Player{
     cash: i64,
@@ -158,21 +160,31 @@ fn string_to_bool (input : &String) -> bool {
 fn main(){
     let args: Vec<String> = env::args().collect();
     let mut results: Vec<f64> = Vec::new();
+    let thread_number = 2;
+    let cash: i64; 
+    let target: i64;
+    let bet_limit: i64;
+    let round_limit: i64;
+    let logging: bool;
+    let test_times: i64;
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
-        let test_times: i64 = args[6].parse().ok().expect("Invalid Argument");
-        for _ in 0..test_times {
-            results.push(main_game(args[1].parse().ok().expect("Invalid Argument."),
-                                   args[2].parse().ok().expect("Invalid Argument."), 
-                                   args[3].parse().ok().expect("Invalid Argument."),
-                                   args[4].parse().ok().expect("Invalid Argument."),
-                                   string_to_bool(&args[5])));
-        }
+        cash = args[1].parse().ok().expect("Invalid Argument.");
+        target = args[2].parse().ok().expect("Invalid Argument."), 
+        bet_limit = args[3].parse().ok().expect("Invalid Argument.");
+        round_limit = args[4].parse().ok().expect("Invalid Argument.");
+        logging = string_to_bool(&args[5]);
+        test_times = args[6].parse().ok().expect("Invalid Argument");
+        
     }else{
         println!("Your arguments were invalid, going with default values.");
-        for _ in 0..10 {
-            results.push(main_game(50, 250, 2, 20000, false));
-        }
+        println!("Argument order should be: cash target bet_limit round_limit logging test_times");
+        cash = 50;
+        target = 250;
+        bet_limit = 2;
+        round_limit = 20000;
+        logging = false;
+        test_times = 10;
     }
     println!("Average Win/Loss ratio: {}", average(results));
 }
