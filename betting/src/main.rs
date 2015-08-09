@@ -165,9 +165,8 @@ fn main(){
     let round_limit: i64;
     let logging: bool;
     let test_times: i64;
-    let already_tested: i64 = 0;
+    let mut already_tested: i64 = 0;
     let mut thread_pool = Vec::new();
-    let mut thread_num: i64;
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
         cash = args[1].parse().ok().expect("Invalid Argument.");
@@ -186,20 +185,16 @@ fn main(){
         logging = false;
         test_times = 10;
     }
-    loop {
-        thread_num = thread_pool.len() as i64;
-        if already_tested < test_times && thread_num < max_thread_number {
-            thread_pool.push(thread::spawn(move || {
+    for _ in 0..max_thread_number {
+        thread_pool.push(thread::spawn(move || {
+            while already_tested < test_times{
+                already_tested = already_tested + 1;
                 results.push(main_game(cash, target, bet_limit, round_limit, logging));
-            }));
-        }else if thread_num >= max_thread_number{
-            for worker in thread_pool.iter() {
-                //go through and check whether each worker is done, if done then remove
-                println!("{}",worker);               
             }
-        }else{
-            break;
-        }
+        }));
     }
-    println!("Average Win/Loss ratio: {}", average(results));
+    for worker in thread_pool{
+        worker.join();
+    }
+    println!("Average Win/Loss ratio: {}", average(results.clone()));
 }
