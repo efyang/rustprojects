@@ -3,8 +3,7 @@
     He reaches a predefined goal ($250) and walks away feeling happy (Win).
     He loses all of his cash ($0) and walks away feeling sad (Lose).  He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
-extern crate num_cpus;
-use std::env;
+extern crate num_cpus; use std::env;
 use std::thread;
 
 struct Player{
@@ -13,8 +12,8 @@ struct Player{
     target: i64,
     bet_limit: i64,
     rounds: i64,
-    round_history: Vec<bool>, //true = win, false = loss
-    round_limit: i64,
+    round_history: Vec<bool>, //true = win, false = loss 
+    round_limit: i64, 
 }
 
 fn get_last_round_chain_length(rounds : &mut Vec<bool>, chain_type : bool) -> i64{
@@ -32,8 +31,7 @@ fn get_last_round_chain_length(rounds : &mut Vec<bool>, chain_type : bool) -> i6
     return accum;
 }
 
-impl Player {
-
+impl Player { 
     fn get_win_ratio(&self) -> f64 {
        //iterate over the round history
        let mut wins: f64 = 0 as f64;
@@ -160,7 +158,7 @@ fn string_to_bool (input : &String) -> bool {
 fn main(){
     let args: Vec<String> = env::args().collect();
     let mut results: Vec<f64> = Vec::new();
-    let max_thread_number: i64 = num_cpus::get();
+    let max_thread_number: i64 = num_cpus::get() as i64;
     let cash: i64; 
     let target: i64;
     let bet_limit: i64;
@@ -168,7 +166,7 @@ fn main(){
     let logging: bool;
     let test_times: i64;
     let already_tested: i64 = 0;
-    let mut thread_pool: Vec<Thread> = Vec::new();
+    let mut thread_pool = Vec::new();
     let mut thread_num: i64;
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
@@ -189,15 +187,15 @@ fn main(){
         test_times = 10;
     }
     loop {
-        thread_num = thread_pool.len();
+        thread_num = thread_pool.len() as i64;
         if already_tested < test_times && thread_num < max_thread_number {
             thread_pool.push(thread::spawn(move || {
                 results.push(main_game(cash, target, bet_limit, round_limit, logging));
             }));
         }else if thread_num >= max_thread_number{
-            for worker in thread_pool.iter(){
+            for worker in thread_pool.iter() {
                 //go through and check whether each worker is done, if done then remove
-                
+                println!("{}",worker);               
             }
         }else{
             break;
