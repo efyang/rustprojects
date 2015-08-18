@@ -3,9 +3,11 @@
     He reaches a predefined goal ($250) and walks away feeling happy (Win).
     He loses all of his cash ($0) and walks away feeling sad (Lose).  He plays too many rounds (20000) and walks away feeling bored (Lose). (For the purposes of this assignment, we will always consider the failure to reach the target amount in the stipulated number of bets as a loss.)*/
 extern crate rand;
-extern crate num_cpus; use std::env;
+extern crate num_cpus; 
+use std::env;
 use std::thread;
 use std::sync::mpsc::channel;
+use std::sync::{Arc, Mutex};
 
 struct Player{
     cash: i64,
@@ -166,10 +168,9 @@ fn main(){
     let round_limit: i64;
     let logging: bool;
     let test_times: i64;
-    let mut already_tested: i64 = 0;
-    let mut thread_pool = Vec::new();
+
+    let already_tested = Arc::new(Mutex::new(0));
     let (sender, receiver) = channel::<f64>();
-    let (tsender, treceiver) = channel::<i64>();
     if args.len() == 7 {
         //cash target bet_limit round_limit logging test_times
         cash = args[1].parse().ok().expect("Invalid Argument.");
@@ -189,24 +190,18 @@ fn main(){
         test_times = 10;
     }
     for _ in 0..max_thread_number {
-        let sender = sender.clone();
-        let tsender = tsender.clone();
-        thread_pool.push(thread::spawn(move || {
-            while already_tested < test_times{
-                tsender.send(1).unwrap();
-                println!("{}",already_tested);
+        let (already_tested,sender) = (already_tested.clone(),sender.clone());
+
+        thread::spawn(move || {
+            let mut already_tested = already_tested.lock().unwrap();
+            while *already_tested < test_times{
+                *already_tested += 1;
                 sender.send((main_game(cash, target, bet_limit, round_limit, logging))).unwrap();
             }
-        }));
-    }
-    for _ in 0..test_times{
-        already_tested = already_tested + treceiver.recv().unwrap();
+        });
     }
     for _ in 0..test_times{
         results.push(receiver.recv().unwrap());
     }
-    for worker in thread_pool{
-        worker.join().ok().expect("Thread failed to join.");
-    }
-    println!("Average Win/Loss ratio: {}", average(results));
+    println!("\nAverage Win/Loss ratio: {}", average(results));
 }
