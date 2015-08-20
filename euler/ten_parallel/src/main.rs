@@ -1,7 +1,8 @@
 #![feature(step_by)]
 #![feature(iter_arith)]
+#![feature(append)]
 use std::thread;
-use std::sync::mpsc::channel;
+use std::sync::{Arc, Mutex};
 extern crate num_cpus;
 
 fn get_indices(thread_n: u64, total_proc: u64, list_length: u64) -> (u64, u64) {
@@ -21,29 +22,28 @@ fn vector_cut(vec: Vec<u64>, start: u64, end: u64) -> Vec<u64> {
 fn sieve(limit: u64) -> Vec<u64> {
     let max_threads: u64 = num_cpus::get() as u64;
     let mut list: Vec<u64> = (3..limit).step_by(2).filter(|&x| x % 3 != 0).collect();
+    let mut newlist = Arc::new(Mutex::new(list.clone()));
     let mut primes: Vec<u64> = vec![2,3];
     let mut prime: u64 = 3;
 
-    let (sender, receiver) = channel();
     let mut list_len = list.len();
     while list_len >= max_threads as usize {
         for num in 0..max_threads {
-            let sender = sender.clone();
-            let (start, end) = get_indices(num, max_threads, list_len as u64);
-            let mylist: Vec<u64> = vector_cut(list.clone(),start,end);
+            let newlist = newlist.clone();
+            let list = list.clone();
+            
             //spawn threads and partition off pieces of the main list (index and clone)
             thread::spawn(move || {
-                for n in mylist.into_iter().filter(|&n| n % prime != 0) {
-                    println!("{:?}",n);
-                    sender.send(n.clone());
-                }
+                let (start, end) = get_indices(num, max_threads, list_len as u64);
+                let mut mylist: Vec<u64> = vector_cut(list,start,end);
+                println!("{:?}",mylist.first());
+                newlist.lock().unwrap().append(&mut mylist
+                                               .into_iter()
+                                               .filter(|&n| n % prime != 0)
+                                               .collect()); 
             });
         }
-        list.clear();
-        for _ in 0..max_threads {
-            //append data accordingly
-            list.push(receiver.recv().unwrap());
-        }
+        list.clone_from(&newlist.lock().unwrap().clone());
         list.sort();
         prime = list.remove(0);
         primes.push(prime.clone());
