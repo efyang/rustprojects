@@ -33,7 +33,6 @@ fn is_prime(n: u64) -> bool {
 fn sieve(limit: u64) -> Vec<u64> {
     let max_threads: u64 = num_cpus::get() as u64;
     let mut list: Vec<u64> = (3..(limit + 1)).step_by(2).collect();
-    let mut primes: Vec<u64> = vec![2,3];
     let list_len = list.len() as u64;
 
     let mut recvlist: Vec<Vec<u64>> = Vec::new();
@@ -62,8 +61,8 @@ fn sieve(limit: u64) -> Vec<u64> {
     }
     
     list.clone_from(&list_accum);
-    primes.append(&mut list.clone());
-    return primes;
+    list.insert(0,2);
+    return list;
 }
 
 fn main() {

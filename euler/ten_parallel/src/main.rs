@@ -1,6 +1,7 @@
 #![feature(step_by)]
 #![feature(iter_arith)]
 #![feature(append)]
+#![feature(position_elem)]
 use std::thread;
 //use std::sync::{Arc, Mutex};
 use std::sync::mpsc::channel;
@@ -49,14 +50,15 @@ fn sieve(limit: u64) -> Vec<u64> {
         for _ in 0..max_threads {
             recvlist.push(rx.recv().unwrap());
         }
-        recvlist.sort();
+        //recvlist.sort();
         for item in recvlist {
             list_accum.append(&mut item.clone());
         }
         
         list.clone_from(&list_accum);
         list_len = list.len() as u64;
-        prime = list.remove(0);
+        prime = list.iter().min().unwrap().clone() as u64;
+        list.remove(list.position_elem(&prime).unwrap());
         primes.push(prime.clone());
     }
     primes.append(&mut list.clone());
@@ -64,5 +66,5 @@ fn sieve(limit: u64) -> Vec<u64> {
 }
 
 fn main() {
-    println!("Sum: {}", sieve(2000000 as u64).iter().sum::<u64>());
+    println!("Sum: {}", sieve(100 as u64).iter().sum::<u64>());
 }
