@@ -5,7 +5,7 @@ use std::fs::File;
 fn main() {
     let mut f = File::open("numbers.txt").unwrap(); 
     let mut data = String::new();
-    f.read_to_string(&mut data).unwrap();
+    f.read_to_string(&mut data);
     let sum = data.trim()
         .lines()
         .map(|line| &line[0 .. 12])
