@@ -1,0 +1,8 @@
+[package]
+name = "p14"
+version = "0.1.0"
+authors = ["honorabrutroll <edward.yang6771@gmail.com>"]
+
+[dependencies]
+num_cpus = "0.2.6"
+
