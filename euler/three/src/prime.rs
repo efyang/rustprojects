@@ -1,21 +1,13 @@
-
-
-fn even(n : u64) -> bool{
-    return n % 2 == 0;
-}
-
 pub fn is_prime(n: u64) -> bool{
-    if even(n) {
+    if n % 2 == 0 {
     return false;
     }
-    else{
-        for x in (3..(n as f64).sqrt() as u64 + 1).step_by(2) {
-            if n % x == 0{
-                return false;
-            }
+    for x in (3..(n as f64).sqrt() as u64 + 1).step_by(2) {
+        if n % x == 0{
+            return false;
         }
-        return true;
     }
+    return true;
 }
 
 pub fn factorize(n: u64) -> Vec<u64> {
