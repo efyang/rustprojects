@@ -1,6 +1,6 @@
 extern crate num;
 use num::bigint::{BigUint, ToBigUint};
-fn factorial(n: &BigUint) -> BigUint {
+fn factorial(n: BigUint) -> BigUint {
     let one = 1.to_biguint().unwrap();
     if n != one {
         return n.clone() * factorial(n - one);
@@ -11,7 +11,7 @@ fn factorial(n: &BigUint) -> BigUint {
 }
 
 fn combination(n: BigUint, r: BigUint) -> BigUint {
-    return factorial(&n) / (factorial(&r) * factorial(n - r));
+    return factorial(n.clone()) / (factorial(r.clone()) * factorial(n - r));
 }
 
 fn main() {
