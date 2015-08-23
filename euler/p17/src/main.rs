@@ -1,6 +1,6 @@
 const NUMLENGTH: [u32; 20] = [4,3,3,5,4,4,3,5,5,4,3,6,6,8,8,7,7,9,8,8];
 //0-19
-const TENNUMLENGTH: [u32; 8] = [6,6,6,5,5,7,6,6];
+const TENNUMLENGTH: [u32; 8] = [6,6,5,5,5,7,6,6];
 //20-90 by tens
 const OVERNUMLENGTH: [u32; 2] = [7,8];
 //100,1000 (100 always have an and in them)
@@ -28,14 +28,12 @@ fn number_to_length(n: u32) -> u32 {
             vec_rep.pop().unwrap();
         }
         else {
-            length += NUMLENGTH[vec_rep.pop().unwrap() as usize];
-            length += OVERNUMLENGTH[0];      
-        } 
-
-        if was_thousand && (vec_rep.first().unwrap().clone() != 0 || vec_rep.get(1).unwrap().clone() != 0) {
+            if was_thousand && (vec_rep.first().unwrap().clone() != 0 || vec_rep.get(1).unwrap().clone() != 0) {
                 length += 3;
-        }    
-    
+            }
+            length += NUMLENGTH[vec_rep.pop().unwrap() as usize];
+            length += OVERNUMLENGTH[0];     
+        } 
     }
     if vec_rep.len() == 2 {
         if vec_rep.last().unwrap().clone() == 1 {
@@ -60,7 +58,6 @@ fn number_to_length(n: u32) -> u32 {
             length += NUMLENGTH[vec_rep.pop().unwrap() as usize];
         }
     }
-    println!("{} : {}", n, length);
     return length; 
 }
 
@@ -69,6 +66,5 @@ fn main() {
     for x in 1..1001 {
         letters += number_to_length(x);
     }
-    println!("{}", number_to_length(300));
     println!("{}", letters);
 }
