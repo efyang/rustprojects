@@ -1,4 +1,4 @@
-fn is_leap_year(year: u64) -> bool {
+fn is_leap_year(year: &u64) -> bool {
     let yearchars: Vec<u32> = year.to_string()
         .chars()
         .rev()
@@ -14,11 +14,26 @@ fn is_leap_year(year: u64) -> bool {
 }
 
 fn main() {
-    println!("Hello, world!");
-    let mut day = 1;
+    let mut day = 366u64 % 7;
+    let mut sundays = 0;
     for year in 1901..2001u64 {
-        
+        let month_lengths: [u64; 12];
+        if is_leap_year(&year) {
+            month_lengths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        }
+        else {
+            month_lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        }
+
+        for month in month_lengths.iter() {
+            day += *month;
+            if day % 7 == 0 {
+                sundays += 1;
+            }
+        }
+        day = day % 7;
     }
+    println!("{}", sundays);
 }
 
 #[cfg(test)]
