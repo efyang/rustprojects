@@ -6,5 +6,10 @@ fn main() {
     let mut f = File::open("names.txt").unwrap(); 
     let mut data = String::new();
     f.read_to_string(&mut data).unwrap();
-    println!("{:?}", data.rsplit('"').collect::<Vec<&str>>());
+    let names = data.split('"')
+        .collect::<String>();
+    let mut namelist = names.split(",")
+        .collect::<Vec<&str>>();
+    namelist.sort();
+    println!("{:?}",namelist);
 }
