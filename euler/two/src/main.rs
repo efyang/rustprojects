@@ -1,5 +1,5 @@
 fn fib_list_to_max(max: i64) -> Vec<i64>{
-    let mut fib_list: Vec<i64> = vec![1,2];
+    let mut fib_list: Vec<i64> = vec![1,1];
     let mut index;
     let mut next_fib: i64;
     loop{
