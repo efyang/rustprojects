@@ -1,3 +1,7 @@
 fn main() {
-    println!("Hello, world!");
+    for d in 1..200 {
+        println!("1/{} : {}", d, 1f64 / (d as f64));
+    }
 }
+
+
