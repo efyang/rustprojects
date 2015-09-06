@@ -6,16 +6,17 @@ use rustty::{Terminal, Cell, Style, Color, Event};
 use std::thread::sleep_ms;
 use rand::random;
 
-//need to implement random terminal
-
+//parallelize
 fn main() {
     let mut term = Terminal::new().unwrap();
     let dead = Style::with_color(Color::White);
     let alive = Style::with_color(Color::Black);
-    let mut startvec: Vec<bool> = Vec::new();
-    for _ in 0..term.size().0 * term.size().1 {
-        startvec.push(rand::random());
-    } 
+    let mut startvec: Vec<bool> = (0..term.size().0 * term.size().1)
+        .map(|_| rand::random())
+        .collect();
+    //for _ in 0..term.size().0 * term.size().1 {
+        //startvec.push(rand::random());
+    //} 
     term.clone_from_slice(&bools_to_cells(&startvec, &(alive, dead)));
     loop {
         //term.clear_with_styles(alive, alive).unwrap();
@@ -23,6 +24,8 @@ fn main() {
         if evt.is_some() {
             match evt.unwrap() {
                 Event::Key('q') => break, //break
+                Event::Key('r') => {startvec.iter().map(|_| rand::random()).collect::<Vec<bool>>();
+                                    term.clone_from_slice(&bools_to_cells(&startvec, &(alive, dead)));}, //new random seed
                 Event::Key(_)   => {},    //do nothing
             }
         }
