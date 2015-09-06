@@ -1,7 +1,0 @@
-[package]
-name = "conway"
-version = "0.1.0"
-authors = ["honorabrutroll"]
-[dependencies]
-rustty = "*"
-rand = "0.3"
