@@ -1,7 +1,10 @@
 #![feature(clone_from_slice)]
-#![feature(convert)] extern crate rustty;
+#![feature(convert)] 
+extern crate rustty;
+extern crate rand;
 use rustty::{Terminal, Cell, Style, Color, Event};
 use std::thread::sleep_ms;
+use rand::random;
 
 //need to implement random terminal
 
@@ -9,8 +12,13 @@ fn main() {
     let mut term = Terminal::new().unwrap();
     let dead = Style::with_color(Color::White);
     let alive = Style::with_color(Color::Black);
+    let mut startvec: Vec<bool> = Vec::new();
+    for _ in 0..term.size().0 * term.size().1 {
+        startvec.push(rand::random());
+    } 
+    term.clone_from_slice(&bools_to_cells(&startvec, &(alive, dead)));
     loop {
-        term.clear_with_styles(alive, alive).unwrap();
+        //term.clear_with_styles(alive, alive).unwrap();
         let evt = term.get_event(0).unwrap();
         if evt.is_some() {
             match evt.unwrap() {
@@ -27,17 +35,13 @@ fn main() {
         let termcopy: Vec<bool> = bufferterm.clone();
         let termsize: (usize, usize) = term.size();
         
-        //bufferterm[(term.size().0 * 1) - 1] = false;
         for y in 0..termsize.1 {
             for x in 0..termsize.0 {
                 bufferterm[(y * termsize.0) + x] = is_alive(&(x, y), &termcopy, &termsize);
             }
         }
 
-        let newterm: Vec<Cell> = bufferterm.iter()
-            .map(|value| if *value { Cell::with_styles(alive, alive)}
-                else { Cell::with_styles(dead, dead)})
-            .collect();
+        let newterm: Vec<Cell> = bools_to_cells(&bufferterm, &(alive, dead));
         term.clone_from_slice(&newterm.as_slice());
         sleep_ms(10u32);
         term.swap_buffers().unwrap();
@@ -65,28 +69,28 @@ fn is_alive(idx: &(usize, usize), term: &Vec<bool>, size: &(usize, usize)) -> bo
         .map(|i| term[(i.1 * size.0) + i.0])
         .collect();
     let live: usize = statuses.iter().fold(0usize, |acc, &item| if item { acc + 1 } else {acc});
-    //println!("{}", live);
-    //for n in neighbors {
-        //println!("{}, {}", n.0, n.1);
-    //}
     if (term[(idx.1 * size.0) + idx.0]) {
         //if cell is already alive 
         if live < 2 || live > 3 {
             return false;
         }
-        else {
-            return true; 
-        }
+        return true; 
     }
     else {
         //if cell is dead
         if live == 3 {
             return true;
         }
-        else {
-            return false;
-        }
+        return false;
     }
+}
+
+//styles is (alive, dead)
+fn bools_to_cells(orig: &Vec<bool>, styles: &(Style, Style)) -> Vec<Cell> {
+    orig.iter()
+        .map(|x| if *x {Cell::with_styles(styles.0, styles.0)} 
+             else {Cell::with_styles(styles.1, styles.1)})
+        .collect()
 }
 
 #[cfg(test)] 
