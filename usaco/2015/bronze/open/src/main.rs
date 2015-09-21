@@ -27,7 +27,7 @@ fn main() {
 }
 
 fn is_moo(strchunk: &Vec<char>) -> bool {
-    strchunk[0] != 'M' && strchunk[1] != 'O' && strchunk[1] == strchunk[2] && !strchunk.contains(&'-')
+    strchunk[0] != 'M' && strchunk[1] != 'O' && strchunk[1] == strchunk[2] && !strchunk.contains(&'-') && strchunk[0] != strchunk[1]
 }
 
 fn get_horizontals(graph: Vec<Vec<char>>, collected: &mut HashMap<String, usize>) {
