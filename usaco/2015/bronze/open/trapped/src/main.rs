@@ -1,13 +1,14 @@
 #![feature(result_expect)]
 #![feature(convert)]
+#![feature(slice_splits)]
 use std::fs::File;
 use std::io::prelude::*;
 
 fn main() {
     //(size, position)
     let data: Vec<(usize, usize)> = read_data();
+    println!("{:?}", iterate(&data));
     println!("{:?}", data);
-    //println!("{:?}", iterate(&data));
 }
 
 fn read_data() -> Vec<(usize, usize)> {
@@ -31,12 +32,40 @@ fn read_data() -> Vec<(usize, usize)> {
 
 
 fn write_data(data: &usize) {
-    let mut output = File::create("trapped.out").expect("Failed to create file trapped.out()");
-    output.write_all(data.to_string().into_bytes().as_slice());
+    let mut output = File::create("trapped.out").expect("Failed to create file trapped.out");
+    output.write_all(data.to_string().into_bytes().as_slice()).expect("Failed to write data.");
 }
 
 fn iterate(data: &Vec<(usize, usize)>) -> Vec<(usize, usize)> {
-    unimplemented!();
+    fn get_distances(data: &Vec<(usize, usize)>) -> Vec<usize> {
+        //gets distances between bales
+        let init = data.split_last().unwrap().1;
+        let tail = data.split_first().unwrap().1;
+        let distances: Vec<usize> = init.iter().zip(tail.iter())
+            .map(|datapair| (datapair.1).1 - (datapair.0).1)
+            .collect::<Vec<usize>>();
+        distances
+    }
+
+    fn remove_bale_posns(data: &Vec<(usize, usize)>, posns: &Vec<usize>) -> Vec<(usize, usize)> {
+        //removes the bales that match with the posns
+        data.to_owned()
+            .into_iter()
+            .filter(|x| !posns.contains(&x.1))
+            .collect::<Vec<(usize, usize)>>()
+    } 
+
+    let distances = get_distances(data);
+    let mut dataclone = data.to_owned();
+    dataclone.reserve(0);
+
+    for bale in dataclone.iter() {
+        println!("{:?}", bale);
+    }
+    //for bale in data.iter().rev() {
+        
+    //}
+    dataclone
 }
 
 
