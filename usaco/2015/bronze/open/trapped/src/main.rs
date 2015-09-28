@@ -5,9 +5,14 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+//completely redo iterations
+
 fn main() {
     //(size, position)
     let data: Vec<(usize, usize)> = read_data();
+    for x in data.iter() {
+        println!("{:?}", x);
+    }
     let result: usize = get_distances(&iterate_until_no_changes(&data))
         .iter()
         .sum::<usize>();
