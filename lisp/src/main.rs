@@ -1,4 +1,4 @@
-mod parse;
+mod parser;
 
 pub struct Exprs(Vec<Expr>);
 
@@ -8,5 +8,8 @@ pub enum Expr {
 }
 
 fn main() {
-    println!("Hello, world!");
+    match parser::parse(&"Hello World".to_string())[0] {
+        Expr::Vec(ref xs) => {println!("{:?}", xs)},
+        _ => {},
+    }
 }
