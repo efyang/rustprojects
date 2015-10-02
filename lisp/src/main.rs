@@ -1,4 +1,5 @@
 #![feature(custom_derive)]
+#![feature(convert)]
 mod parser;
 
 pub struct Exprs(Vec<Expr>);
