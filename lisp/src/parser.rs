@@ -6,6 +6,12 @@ pub fn parse(data: &String) -> Vec<Expr> {
     data_vec.iter().map(|x| Expr::Vec(x.to_owned())).collect::<Vec<Expr>>()
 }
 
-fn line_to_space(data: &String) -> String {
+pub fn parse_single(data: &String) -> Expr {
+    for chars in parse_single.iter() {
+        chars
+    }
+}
+
+fn lines_to_spaces(data: &String) -> String {
     data.as_str().replace("\n", " ")
 } 

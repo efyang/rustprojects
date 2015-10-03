@@ -4,7 +4,6 @@ mod parser;
 
 pub struct Exprs(Vec<Expr>);
 
-#[derive(debug)]
 pub enum Expr {
     Vec(Vec<String>),
     Exprs,
