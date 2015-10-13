@@ -1,5 +1,6 @@
 #![feature(custom_derive)]
 #![feature(convert)]
+#![feature(split_first)]
 extern crate clap;
 mod parser;
 mod data;
