@@ -15,12 +15,7 @@ pub fn parse(data: &String) -> Expr {
         .rev()
         .map(|t| t.clone())
         .collect::<Vec<String>>();
-    let parens = count_parens(&tokens);
 
-    if parens.0 != parens.1 || parens.0 == 0 {
-        panic!("Missing parentheses, cannot interpret program.");
-    }
-    
     tokens_to_expr(&mut tokens)
 }
 
@@ -67,12 +62,5 @@ fn tokenize(data: &String) -> Vec<String> {
 }
 
 fn lines_to_spaces(data: &String) -> String {
-    data.as_str().replace("\n", " ")
+    data.as_str().replace("\r\n", " ").replace("\n", " ")
 } 
-
-fn count_parens(tokens: &Vec<String>) -> (usize, usize) {
-    tokens.iter().fold((0, 0), |acc, ref item| 
-                       if item.as_str() == "(" {(acc.0 + 1, acc.1)}
-                       else if item.as_str() == ")" {(acc.0, acc.1 + 1)}
-                       else {acc})
-}

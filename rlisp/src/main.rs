@@ -28,7 +28,7 @@ fn main() {
     let parsed = parse(&"(+ 1 2 3 4)".to_string());
     match parsed {
         Expr::Exprs(ref xs) => {println!("{:?}", xs)},
-        _ => {},
+        Expr::Expr(ref x) => {println!("{:?}", x)},
     }
     parsed.eval();
 }
