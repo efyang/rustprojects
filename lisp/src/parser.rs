@@ -1,4 +1,13 @@
-use super::Expr;
+use data::*;
+use std::fs::File;
+use std::io::prelude::*;
+
+pub fn parse_file(filename: &str) -> Expr {
+    let mut f = File::open(filename).expect("Failed to open file.");
+    let mut s = String::new();
+    f.read_to_string(&mut s).expect("Failed to read file.");
+    parse(&s)
+}
 
 pub fn parse(data: &String) -> Expr {
     let mut tokens = tokenize(&lines_to_spaces(&data))
@@ -31,7 +40,21 @@ fn tokens_to_expr(tokens: &mut Vec<String>) -> Expr {
     } else if token == ")" {
         panic!("Unexpected )");
     } else {
-        Expr::Expr(token)
+        Expr::Expr(atomize(token))
+    }
+}
+
+fn atomize(token: String) -> Object {
+    if token.contains('.') {
+        match token.parse::<f64>() {
+            Ok(f) => Object::Number(Number::Float(f)),
+            _ => Object::Symbol(token),
+        }
+    } else {
+        match token.parse::<isize>() {
+            Ok(i) => Object::Number(Number::Int(i)),
+            _ => Object::Symbol(token),
+        }
     }
 }
 
