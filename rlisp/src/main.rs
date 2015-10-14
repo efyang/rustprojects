@@ -1,7 +1,8 @@
 #![feature(custom_derive)]
 #![feature(convert)]
 #![feature(split_first)]
-//#![feature(const_fn)]
+#![feature(clone_from_slice)]
+#![feature(slice_splits)]
 extern crate clap;
 mod parser;
 mod data;
