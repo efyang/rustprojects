@@ -29,13 +29,13 @@ fn main() {
     //} else {
     
     //}
-    let parsed = parse(&"(+ 1 2 3 4)".to_string());
+    let parsed = parse(&"(cons 1 (list 1 2))".to_string());
     match parsed {
-        Expr::Exprs(ref xs) => {println!("{:?}", xs)},
-        Expr::Expr(ref x) => {println!("{:?}", x)},
+        Expr::Exprs(ref xs) => {println!("{:#?}", xs)},
+        Expr::Expr(ref x) => {println!("{:#?}", x)},
     }
     let mut stdenv = Env::new();
-    parsed.eval(&mut stdenv);
+    println!("{:#?}", parsed.eval(&mut stdenv));
 }
 
 fn repl(file: &str) {
