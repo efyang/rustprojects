@@ -1,5 +1,4 @@
 use data::*;
-use stdlisp::BASE_FUNCTIONS;
 use std::thread;
 
 impl Expr {

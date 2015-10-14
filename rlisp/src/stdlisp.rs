@@ -1,4 +1,6 @@
+#![allow(dead_code)]
 use data::*;
+
 pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
     Function {name: "+", procedure: &(add as fn(Vec<Object>, &mut Env) -> Object)},
     //Function {name: "-", procedure: &(subtract as fn(Vec<Object>, &mut Env) -> Object)},
@@ -6,7 +8,7 @@ pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
     Function {name: "cons", procedure: &(cons as fn(Vec<Object>, &mut Env) -> Object)}
 ];
 
-fn add(args: Vec<Object>, env: &mut Env) -> Object {
+fn add(args: Vec<Object>, _: &mut Env) -> Object {
     let numbers = args.iter()
         .map(|x| get_number(x))
         .collect::<Vec<Number>>();
@@ -28,11 +30,11 @@ fn get_number(object: &Object) -> Number {
     }
 }
 
-fn list(args: Vec<Object>, env: &mut Env) -> Object {
+fn list(args: Vec<Object>, _: &mut Env) -> Object {
     Object::List(Box::new(args))
 }
 
-fn cons(args: Vec<Object>, env: &mut Env) -> Object {
+fn cons(args: Vec<Object>, _: &mut Env) -> Object {
     if !(args.len() == 2) {
         //invalid arg number
         panic!("Invalid number of arguments for cons.")
@@ -46,7 +48,7 @@ fn cons(args: Vec<Object>, env: &mut Env) -> Object {
             } else {
                 let mut tmpvec = *elems.clone();
                 tmpvec.push(last.clone());
-                list(tmpvec, env)
+                Object::List(Box::new(tmpvec))
             }
         } else {
             //list or elem is in the tail position; append the list or make a new list
@@ -55,9 +57,9 @@ fn cons(args: Vec<Object>, env: &mut Env) -> Object {
                 for x in elems.iter() {
                     tmpvec.push(x.clone());
                 }
-                list(tmpvec, env)
+                Object::List(Box::new(tmpvec))
             } else {
-                list(args, env)
+                Object::List(Box::new(args))
             }
         }    
     } 
