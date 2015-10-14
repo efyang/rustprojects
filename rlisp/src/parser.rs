@@ -15,7 +15,6 @@ pub fn parse(data: &String) -> Expr {
         .rev()
         .map(|t| t.clone())
         .collect::<Vec<String>>();
-
     tokens_to_expr(&mut tokens)
 }
 
@@ -28,9 +27,9 @@ fn tokens_to_expr(tokens: &mut Vec<String>) -> Expr {
     if token == "(" {
         let mut l = Vec::new();
         while tokens.last().unwrap().as_str() != ")" {
-            l.push(tokens_to_expr(&mut tokens.to_owned()));
-            tokens.pop().unwrap();
+            l.push(tokens_to_expr(tokens));
         }
+        tokens.pop().unwrap();
         Expr::Exprs(Box::new(l))
     } else if token == ")" {
         panic!("Unexpected )");
@@ -62,5 +61,5 @@ fn tokenize(data: &String) -> Vec<String> {
 }
 
 fn lines_to_spaces(data: &String) -> String {
-    data.as_str().replace("\r\n", " ").replace("\n", " ")
+    data.replace("\r\n", " ").replace("\n", " ")
 } 

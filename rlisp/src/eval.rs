@@ -8,8 +8,8 @@ impl Expr {
     }
 
     pub fn eval(&self, env: &mut Env) -> Object {
-        if let &Expr::Exprs(ref objects) = self {
-            let evaluated = objects
+        if let &Expr::Exprs(ref exprs) = self {
+            let evaluated = exprs
                 .iter()
                 .map(|ref mut x| x.eval(env))
                 .collect::<Vec<Object>>();

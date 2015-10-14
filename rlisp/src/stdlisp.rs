@@ -1,5 +1,4 @@
 use data::*;
-
 pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
     Function {name: "+", procedure: &(add as fn(Vec<Object>, &mut Env) -> Object)},
     //Function {name: "-", procedure: &(subtract as fn(Vec<Object>, &mut Env) -> Object)},
@@ -36,23 +35,27 @@ fn list(args: Vec<Object>, env: &mut Env) -> Object {
 fn cons(args: Vec<Object>, env: &mut Env) -> Object {
     if !(args.len() == 2) {
         //invalid arg number
-        println!("{:?}", args.len());
         panic!("Invalid number of arguments for cons.")
     } else {
-        if let &Object::List(ref elems) = args.clone().first().unwrap() {
-            let last = args.last().unwrap();
+        let first = args.first().unwrap().clone();
+        let last = args.last().unwrap().clone();
+        if let Object::List(elems) = first {
             //list is in the head position; append the element
-            if let &Object::List(_) = last {
+            if let Object::List(_) = last {
                 panic!("Cannot cons two lists.");
             } else {
-                let mut changed_elems = *elems.clone();
-                changed_elems.push(last.clone());
-                list(changed_elems, env)
+                let mut tmpvec = *elems.clone();
+                tmpvec.push(last.clone());
+                list(tmpvec, env)
             }
         } else {
             //list or elem is in the tail position; append the list or make a new list
-            if let &Object::List(ref elems) = args.clone().last().unwrap() {
-                unimplemented!();
+            if let Object::List(elems) = last {
+                let mut tmpvec = vec![first];
+                for x in elems.iter() {
+                    tmpvec.push(x.clone());
+                }
+                list(tmpvec, env)
             } else {
                 list(args, env)
             }
