@@ -20,33 +20,36 @@ pub enum Number {
     Float(f64),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Env<'a> {
-    functions: Vec<Function<'a>>,
-    variables: HashMap<String, Object>,
+    pub functions: Vec<Function<'a>>,
+    pub variables: HashMap<String, Object>,
 }
 
 impl<'a> Env<'a> {
     pub fn new() -> Env<'a> {
         Env {
-            functions: BASE_FUNCTIONS,
+            functions: BASE_FUNCTIONS.to_vec(),
             variables: HashMap::new(),
         }
     }
     pub fn with_functions(functions: Vec<Function<'a>>) -> Env {
-        let mut funcs: Vec<Function> = BASE_FUNCTIONS.clone();
+        let mut funcs: Vec<Function> = BASE_FUNCTIONS.to_vec().clone();
         funcs.clone_from_slice(&functions);
         Env {
             functions: funcs,
             variables: HashMap::new(),
         }
     }
+    pub fn functions(&self) -> Vec<Function> {
+        self.functions.clone()
+    }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Function<'a> {
-    name: &'static str,
-    procedure: &'a (fn(Vec<Object>) -> Object),
+    pub name: &'static str,
+    pub procedure: &'a (fn(Vec<Object>, &mut Env) -> Object),
 }
 
 

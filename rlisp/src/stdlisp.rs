@@ -1,14 +1,15 @@
 use data::*;
 
-pub const BASE_FUNCTIONS: Vec<Function<'static>> = vec![
-    Function {name: "+", procedure: &(add as fn(Vec<Object>) -> Object)},
-    Function {name: "-", procedure: &(subtract as fn(Vec<Object>) -> Object)}
+pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
+    Function {name: "+", procedure: &(add as fn(Vec<Object>, &mut Env) -> Object)}
+    //Function {name: "-", procedure: &(subtract as fn(Vec<Object>) -> Object)}
 ];
 
-fn add(args: Vec<Object>) -> Object {
+fn add(args: Vec<Object>, env: &mut Env) -> Object {
     unimplemented!();
 }
 
-fn subtract(args: Vec<Object>) -> Object {
+fn subtract(args: Vec<Object>, env: &mut Env) -> Object {
     unimplemented!();
 }
+

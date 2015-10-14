@@ -1,6 +1,7 @@
 #![feature(custom_derive)]
 #![feature(convert)]
 #![feature(split_first)]
+//#![feature(const_fn)]
 extern crate clap;
 mod parser;
 mod data;
@@ -32,8 +33,8 @@ fn main() {
         Expr::Exprs(ref xs) => {println!("{:?}", xs)},
         Expr::Expr(ref x) => {println!("{:?}", x)},
     }
-    let stdenv = Env::new();
-    parsed.eval(stdenv);
+    let mut stdenv = Env::new();
+    parsed.eval(&mut stdenv);
 }
 
 fn repl(file: &str) {
