@@ -44,6 +44,23 @@ impl<'a> Env<'a> {
     pub fn functions(&self) -> Vec<Function> {
         self.functions.clone()
     }
+    pub fn variables(&self) -> HashMap<String, Object> {
+        self.variables.clone()
+    }
+    pub fn add_variable(&mut self, var: String, value: Object) {
+        if self.variables().keys().any(|x| x == &var) {
+            panic!("Variable {:?} cannot be set because it already exists in current env.");
+        } else {
+            self.variables.insert(var, value);
+        }
+    }
+    //pub fn change_variable(&mut self, var: String, value: Object) {
+        //if !self.variables().keys().any(|x| x == &var) {
+            //panic!("Variable {:?} cannot be changed because it does not exist.");
+        //} else {
+            //self.variables[&var] = value;
+        //}
+    //}
 }
 
 #[derive(Clone)]
