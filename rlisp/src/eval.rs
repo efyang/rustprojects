@@ -1,47 +1,50 @@
 use data::*;
 use stdlisp::BASE_FUNCTIONS;
+use std::thread;
 
-trait Eval {
-    fn eval(self, env: Env) -> Expr;
-}
+impl Expr {
+    fn eval_no_panic(self, env: Env) -> Expr {
+        unimplemented!()
+    }
 
-impl Eval for Expr::Expr {
-    fn eval(self, env: Env) -> Expr {
-        self
+    fn eval(self, env: Env) -> Object {
+        if let Expr::Exprs(objects) = self {
+            let evaluated = objects
+                .iter()
+                .map(|&x| x.eval(env))
+                .collect::<Vec<Object>>();
+            let splitted: (&Object, &[Object]) = evaluated.split_first().unwrap();
+            let function_name = splitted.0;
+            let args = splitted.1.to_vec();
+            if let &Object::Symbol(fn_name) = function_name {
+                eval_function(fn_name, args, env)
+            } else {
+                panic!("Invalid function name {:?}", function_name);
+            }
+        } else {
+            if let Expr::Expr(object) = self {
+                object
+            } else {
+                panic!("Failed to eval {:?}", self);
+            }
+        }
     }
 }
 
-impl Eval for Expr::Exprs {
-    fn eval(self, env: Env) -> Expr {
-        let evaluated = unbox(self)
-            .iter()
-            .map(|x| x.eval())
-            .collect::<Vec<Expr>>();
-        let splitted = evaluated.split_first().unwrap();
-        let function_name = splitted.0;
-        let args = splitted.1;
-        if let Expr::Expr(Object::Symbol(fn_name)) = function_name {
-            eval_method(fn_name, args)
-        } else {
-            panic!("Invalid function nae {:?}", function_name);
-        }
-    } 
+fn eval_function(function_name: String, args: Vec<Object>, env: Env) -> Object {
+    let function = match_first_function(function_name, env.functions);
+    (function.procedure)(args)
 }
 
-fn eval_method(function_name: String, args: Vec<Object>, env: Env) -> Expr {
-    function = match_first_function(function_name, env.functions);
-    function.procedure(args)
-}
-
-fn match_first_function(function_name: String, functions: Vec<Method>, env: Env) -> Function {
+fn match_first_function(function_name: String, functions: Vec<Function>) -> Function {
     if functions.is_empty() {
         panic!("No such function {:?}", function_name);    
     }
-    let splitted = functions.split_first().unwrap();
+    let splitted: (&Function, &[Function]) = functions.split_first().unwrap();
     let current = splitted.0;
-    if current.name == function_name {
-        current
+    if current.name == function_name.as_str() {
+        *current
     } else {
-        match_first_function(function_name, splitted.1, env)  
+        match_first_function(function_name, splitted.1.to_vec())  
     }
 }

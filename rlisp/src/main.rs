@@ -5,6 +5,7 @@ extern crate clap;
 mod parser;
 mod data;
 mod eval;
+mod stdlisp;
 
 use clap::{Arg, App};
 use data::*;
@@ -31,7 +32,8 @@ fn main() {
         Expr::Exprs(ref xs) => {println!("{:?}", xs)},
         Expr::Expr(ref x) => {println!("{:?}", x)},
     }
-    parsed.eval();
+    let stdenv = Env::new();
+    parsed.eval(stdenv);
 }
 
 fn repl(file: &str) {
