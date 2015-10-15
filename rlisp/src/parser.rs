@@ -15,7 +15,6 @@ pub fn parse(data: &String) -> Expr {
         .rev()
         .map(|t| t.clone())
         .collect::<Vec<String>>();
-    println!("{:?}", tokens.clone());
     tokens_to_expr(&mut tokens)
 }
 
@@ -28,52 +27,57 @@ fn tokens_to_expr(tokens: &mut Vec<String>) -> Expr {
     if token == "(" {
         let mut l = Vec::new();
         while tokens.last().unwrap().as_str() != ")" {
-            if token != " " {
-                l.push(tokens_to_expr(tokens));
-            }
+            l.push(tokens_to_expr(tokens));
         }
-        tokens.pop().unwrap();
-        Expr::Exprs(Box::new(l))
+        //tokens.pop().unwrap();
+        Expr::Exprs(Box::new(remove_spaces(l)))
     } else if token == ")" {
         panic!("Unexpected )");
-    } else {
-        if token == "\"" {
-            let mut s = Vec::new();
-            while tokens.last().unwrap().as_str() != "\"" {
-                s.push(tokens.pop().unwrap());
-            }
-            tokens.pop().unwrap();
-            s.pop().unwrap();
-            Expr::Expr(atomize(s.concat()))
-        } else {
-            Expr::Expr(atomize(token))
+    } else if token == "\"" {
+        if !tokens.contains(&"\"".to_string()) {
+            panic!("No end quote.");
         }
+        let mut s = Vec::new();
+        while tokens.last().unwrap().as_str() != "\"" {
+            s.push(tokens.pop().unwrap());
+        }
+        tokens.pop().unwrap();
+        s.pop().unwrap();
+        Expr::Expr(Object::String(s.split_first().unwrap().1.concat()))
+    } else {
+        Expr::Expr(atomize(token))
     }
 }
 
-fn remove_spaces(l: Vec<Object>) -> Vec<Object> {
-    
+fn remove_spaces(l: Vec<Expr>) -> Vec<Expr> {
+    let space = " ".to_string();
+    let data = l.iter()
+        .filter(|&x| {
+        if let &Expr::Expr(Object::Symbol(ref s)) = x {
+            if s == &space {
+                false
+            } else {
+                true
+            }
+        } else {
+            true
+        }})
+        .map(|x| x.clone())
+        .collect::<Vec<Expr>>();
+    data
 }
 
 fn atomize(token: String) -> Object {
     if token.contains('.') {
         match token.parse::<f64>() {
             Ok(f) => Object::Number(Number::Float(f)),
-            _ => atomize_string(token),
+            _ => Object::Symbol(token),
         }
     } else {
         match token.parse::<isize>() {
             Ok(i) => Object::Number(Number::Int(i)),
-            _ => atomize_string(token),
+            _ => Object::Symbol(token),
         }
-    }
-}
-//detecting strings with whitespace needs work in parser
-fn atomize_string(token: String) -> Object {
-    if token.char_at(0) == '\"' && token.char_at(token.len() - 1) == '\"' {
-        Object::String((&token[1..(token.len() - 1)]).to_string())
-    } else {
-        Object::Symbol(token)
     }
 }
 
