@@ -2,11 +2,11 @@
 use data::*;
 
 pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
-    Function {name: "+", procedure: &(add as fn(Vec<Object>, &mut Env) -> Object)},
+    Function {name: "+", procedure: &(add as LispFn)},
     //Function {name: "-", procedure: &(subtract as fn(Vec<Object>, &mut Env) -> Object)},
-    Function {name: "list", procedure: &(list as fn(Vec<Object>, &mut Env) -> Object)},
-    Function {name: "cons", procedure: &(cons as fn(Vec<Object>, &mut Env) -> Object)},
-    Function {name: "exit", procedure: &(exit as fn(Vec<Object>, &mut Env) -> Object)},
+    Function {name: "list", procedure: &(list as LispFn)},
+    Function {name: "cons", procedure: &(cons as LispFn)},
+    Function {name: "exit", procedure: &(exit as LispFn)},
 ];
 
 fn add(args: Vec<Object>, _: &mut Env) -> Object {
@@ -30,6 +30,8 @@ fn get_number(object: &Object) -> Number {
         panic!("Object {:?} is not a number.", object);
     }
 }
+
+//fn define(args: Vec<Object>, env: &mut Env) -> 
 
 fn list(args: Vec<Object>, _: &mut Env) -> Object {
     Object::List(Box::new(args))
