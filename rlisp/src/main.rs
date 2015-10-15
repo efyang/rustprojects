@@ -2,6 +2,7 @@
 #![feature(convert)]
 #![feature(clone_from_slice)]
 #![feature(slice_splits)]
+#![feature(str_char)]
 extern crate clap;
 mod parser;
 mod data;

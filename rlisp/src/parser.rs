@@ -42,13 +42,21 @@ fn atomize(token: String) -> Object {
     if token.contains('.') {
         match token.parse::<f64>() {
             Ok(f) => Object::Number(Number::Float(f)),
-            _ => Object::Symbol(token),
+            _ => atomize_string(token),
         }
     } else {
         match token.parse::<isize>() {
             Ok(i) => Object::Number(Number::Int(i)),
-            _ => Object::Symbol(token),
+            _ => atomize_string(token),
         }
+    }
+}
+//detecting strings with whitespace needs work in parser
+fn atomize_string(token: String) -> Object {
+    if token.char_at(0) == '\"' && token.char_at(token.len() - 1) == '\"' {
+        Object::String((&token[1..(token.len() - 1)]).to_string())
+    } else {
+        Object::Symbol(token)
     }
 }
 

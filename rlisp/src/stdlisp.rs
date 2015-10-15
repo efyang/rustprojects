@@ -5,7 +5,8 @@ pub static BASE_FUNCTIONS: &'static [Function<'static>] = &[
     Function {name: "+", procedure: &(add as fn(Vec<Object>, &mut Env) -> Object)},
     //Function {name: "-", procedure: &(subtract as fn(Vec<Object>, &mut Env) -> Object)},
     Function {name: "list", procedure: &(list as fn(Vec<Object>, &mut Env) -> Object)},
-    Function {name: "cons", procedure: &(cons as fn(Vec<Object>, &mut Env) -> Object)}
+    Function {name: "cons", procedure: &(cons as fn(Vec<Object>, &mut Env) -> Object)},
+    Function {name: "exit", procedure: &(exit as fn(Vec<Object>, &mut Env) -> Object)},
 ];
 
 fn add(args: Vec<Object>, _: &mut Env) -> Object {
@@ -63,4 +64,8 @@ fn cons(args: Vec<Object>, _: &mut Env) -> Object {
             }
         }    
     } 
+}
+
+fn exit(args: Vec<Object>, _: &mut Env) -> Object {
+    panic!("rlisp exited.");
 }

@@ -10,6 +10,7 @@ pub enum Expr {
 #[derive(Debug, Clone)]
 pub enum Object {
     Symbol(String),
+    String(String),
     Number(Number),
     List(Box<Vec<Object>>),
 }
