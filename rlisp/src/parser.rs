@@ -10,12 +10,28 @@ pub fn parse_file(filename: &str) -> Expr {
 }
 
 pub fn parse(data: &String) -> Expr {
+    let parens = count_parens(data);
+    if parens.0 != parens.1 {
+        panic!("One or more unmatched parentheses.");
+    }
     let mut tokens = tokenize(&lines_to_spaces(&data))
         .iter()
         .rev()
         .map(|t| t.clone())
         .collect::<Vec<String>>();
     tokens_to_expr(&mut tokens)
+}
+
+fn count_parens(data: &String) -> (usize, usize) {
+    data.chars()
+        .fold((0usize, 0usize),
+        |acc, item| {
+            match item {
+                '(' => (acc.0 + 1, acc.1),
+                ')' => (acc.0, acc.1 + 1),
+                _   => acc
+            }
+        })
 }
 
 fn tokens_to_expr(tokens: &mut Vec<String>) -> Expr {

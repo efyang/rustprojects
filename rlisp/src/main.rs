@@ -65,7 +65,9 @@ info = INFO);
         writer.flush().expect("Failed to flush stdout.");
         let mut input = String::new();
         reader.read_line(&mut input).expect("Failed to read line.");
-        println!("{:?}", parse(&input).eval(&mut stdenv));
+        if input != "\n".to_string() {
+            println!("{:?}", parse(&input).eval(&mut stdenv));
+        }
     }
 
     unimplemented!();
