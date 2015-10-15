@@ -9,10 +9,9 @@ mod data;
 mod eval;
 mod stdlisp;
 
-use clap::{Arg, App};
+use clap::App;
 use data::*;
 use parser::*;
-use eval::*;
 use std::io::{self, Write};
 
 const NAME: &'static str = "rlisp";
@@ -69,6 +68,4 @@ info = INFO);
             println!("{:?}", parse(&input).eval(&mut stdenv));
         }
     }
-
-    unimplemented!();
 }
