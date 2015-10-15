@@ -26,21 +26,25 @@ fn main() {
         .author(AUTHOR)
         .about(INFO)
         .args_from_usage(
-            "-i --interactive=[INTERACTIVE] 'optional - Enables interactive repl - enabled if no file specified'
+            "-i --interactive 'optional - Enables interactive repl - enabled if no file specified'
             -f --file=[FILE] 'optional - specifies a file to load'")
         .get_matches();
-    //let bool interactive;
-    //if let Some(input) = matches.value_of("FILE") {
-        
-    //} else {
-    
-    //}
+    if let Some(input) = matches.value_of("FILE") {
+        if matches.is_present("interactive") {
+            repl(Some(input));
+        } else {
+            println!("{:?}", parse_file(input).eval(&mut Env::new()));
+        }
+    } else {
+        repl(None);
+    }
     //let parsed = parse(&"(cons 1 (list 1 2))".to_string());
     //let mut stdenv = Env::new();
     //println!("{:?}", parsed.eval(&mut stdenv));
     repl(None);
 }
-
+//find some way to detect arrow key presses?
+//have a history?
 fn repl(file: Option<&str>) {
     println!("\r\nStarting REPL for {name} {version}
 {author}
@@ -49,7 +53,7 @@ name = NAME,
 version = VERSION,
 author = AUTHOR,
 info = INFO);
-    let mut reader = io::stdin();
+    let reader = io::stdin();
     let stdout = io::stdout();
     let mut writer = stdout.lock();
     let mut stdenv = Env::new();
