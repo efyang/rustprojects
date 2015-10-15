@@ -15,6 +15,7 @@ pub fn parse(data: &String) -> Expr {
         .rev()
         .map(|t| t.clone())
         .collect::<Vec<String>>();
+    println!("{:?}", tokens.clone());
     tokens_to_expr(&mut tokens)
 }
 
@@ -27,15 +28,31 @@ fn tokens_to_expr(tokens: &mut Vec<String>) -> Expr {
     if token == "(" {
         let mut l = Vec::new();
         while tokens.last().unwrap().as_str() != ")" {
-            l.push(tokens_to_expr(tokens));
+            if token != " " {
+                l.push(tokens_to_expr(tokens));
+            }
         }
         tokens.pop().unwrap();
         Expr::Exprs(Box::new(l))
     } else if token == ")" {
         panic!("Unexpected )");
     } else {
-        Expr::Expr(atomize(token))
+        if token == "\"" {
+            let mut s = Vec::new();
+            while tokens.last().unwrap().as_str() != "\"" {
+                s.push(tokens.pop().unwrap());
+            }
+            tokens.pop().unwrap();
+            s.pop().unwrap();
+            Expr::Expr(atomize(s.concat()))
+        } else {
+            Expr::Expr(atomize(token))
+        }
     }
+}
+
+fn remove_spaces(l: Vec<Object>) -> Vec<Object> {
+    
 }
 
 fn atomize(token: String) -> Object {
@@ -61,13 +78,20 @@ fn atomize_string(token: String) -> Object {
 }
 
 fn tokenize(data: &String) -> Vec<String> {
-    data.replace("(", " ( ")
+    let newdata = data.replace("(", " ( ")
         .replace(")", " ) ")
+        .replace("\"", " \" ")
         .split_whitespace()
         .map(|s| s.to_string())
-        .collect::<Vec<String>>()
+        .collect::<Vec<String>>();
+    let mut spaceddata = Vec::new();
+    for s in newdata.iter() {
+        spaceddata.push(s.clone());
+        spaceddata.push(" ".to_string());
+    }
+    spaceddata
 }
 
 fn lines_to_spaces(data: &String) -> String {
     data.replace("\r\n", " ").replace("\n", " ")
-} 
+}
